@@ -16,7 +16,7 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
         id: "#{query}-#{i}",
         description: "#{Rails.root}/data/srt/*",
         input_message_content: {
-          message_text: "#{t_content} #{i}",
+          message_text: "Messaggio #{i}",
         },
       }
     end

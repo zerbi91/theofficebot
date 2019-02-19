@@ -4,6 +4,10 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
   end
 
   def inline_query(query, _offset)
+    print "query"
+    print query
+    print "offset"
+    print _offset
     query = query.first(10) # it's just an example, don't use large queries.
     t_description = t('.description')
     t_content = t('.content')
@@ -20,5 +24,5 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     end
     answer_inline_query results
   end
-  
+
 end

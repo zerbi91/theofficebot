@@ -22,7 +22,8 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     end
 
     files_srt = Dir.glob("#{Rails.root}/data/srt/*")
-
+    beforeTime = 1
+    afterTime = 2
     print "Cerco: " + query
     print "Tempo Before: #{beforeTime}"
     print "Tempo After: #{afterTime}"

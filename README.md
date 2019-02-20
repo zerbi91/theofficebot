@@ -12,7 +12,7 @@ Add your bot `token` and `username` to a new file `secrets.yml`.
 
 You can start from the secrets.sample.yml
 
-Run $ `bundle install`.
+Run `$ bundle install`.
 
 * Database creation
 WIP

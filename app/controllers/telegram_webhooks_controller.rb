@@ -24,8 +24,8 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     files_srt = Dir.glob("#{Rails.root}/data/srt/*")
 
     print "Cerco: " + query
-    print "Tempo Before: " + str(beforeTime)
-    print "Tempo After: " + str(afterTime)
+    print "Tempo Before: #{beforeTime}"
+    print "Tempo After: #{afterTime}"
     print 'Cerco nei file .srt'
 
     files_srt.eahc do |file|
@@ -45,8 +45,9 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
             currentSentence = line
             # startTime
             i = -1
-            while not is_time(openedFile[index + i]):
+            while not is_time(openedFile[index + i]) do
               i -= 1
+            end
             startTime = get_time(openedFile[index + i])[0]
           else
             currentSentence += line
@@ -54,28 +55,29 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
           if is_end(line)
             # endTime
             i = -1
-            unless is_time(openedFile[index + i])
+            unless is_time(openedFile[index + i]) do
               i -= 1
             end
             endTime = get_time(openedFile[index + i])[1]
             # c'è un a capo
-            founded = True
+            founded = true
             frase.split(' ').each do |word|
-              if not word.lower() in currentSentence.lower()
-                founded = False
+              unless currentSentence.lower().include? word.lower()
+                founded = false
               end
             end
             if founded
               name += 1
               print '~~~TROVATA~~~'
               start = get_seconds_from_time(startTime) - beforeTime
-              end = get_seconds_from_time(endTime) + afterTime
-              comand = "ffmpeg " + " -ss " + str(start) + " -strict -2 " + " -to " + str(end) + " -i " + file.replace('.srt', '.mp4') + " " + str(name) + ".mp4"
+              endTs = get_seconds_from_time(endTime) + afterTime
+              comand = "ffmpeg -ss #{start} -strict -2 -to #{endTs} -i #{file.replace('.srt', '.mp4')} #{name}.mp4"
               print(comand)
               system(comand)
               #  ffmpeg -ss 00:01:00 -i input.mp4 -to 00:02:00 -c copy output.mp4
               # -strict -2 probabilmente non è istantaneo come -c copy, ma taglia correttamente
             end
+          end
           end
         end
       end

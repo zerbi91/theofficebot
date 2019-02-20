@@ -29,7 +29,7 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     print "Tempo After: #{afterTime}"
     print 'Cerco nei file .srt'
 
-    files_srt.eahc do |file|
+    files_srt.each do |file|
       p file
       openedFile
       name = 0

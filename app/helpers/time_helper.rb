@@ -22,29 +22,34 @@ module TimeHelper
   end
 
   def is_time(timeString)
-    return len(timeString.split(' --> ')) == 2
+    return (timeString.split(' --> ')).length == 2
   end
 
   def is_sentence(sentence)
-    if Helper.is_time(sentence)
-      return False
+    if is_time(sentence)
+      return false
     end
     if sentence == '' or sentence == '\n'
-      return False
+      return false
     end
-    if sentence.isdigit()
-      return False
+    if is_number?(sentence)
+      return false
     end
-    return True
+    return true
   end
 
   def is_begin(sentence)
     startSentence = ['"', '-']
-    return sentence[0].isupper() || startSentence.include?(sentence[0])
+    return /[[:upper:]]/.match(sentence[0]) || startSentence.include?(sentence[0])
   end
 
   def is_end(sentence)
     endSentence = ['.', '!', '?']
     return endSentence.include?(sentence[-1])
   end
+
+  def is_number? string
+    true if Float(string) rescue false
+  end
+
 end

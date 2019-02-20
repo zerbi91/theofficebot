@@ -16,8 +16,7 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
         type: :mpeg4_gif,
         id: "#{query}-#{i}",
         mpeg4_url: "https://i.pinimg.com/originals/9d/1e/37/9d1e37914b558bb7f01c73489fbdfb4f.gif",
-        thumb_url: "TBI",
-        description: "#{Rails.root}/data/srt/*"
+        thumb_url: "http://www.kensap.org/wp-content/uploads/empty-photo.jpg"
       }
     end
 
@@ -30,16 +29,14 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     print 'Cerco nei file .srt'
 
     files_srt.each do |file|
-      p file
       name = 0
-      print "Cerco in " + file
+      # print "Cerco in " + file
       openedFile = open(file).readlines()
       currentSentence = ""
       startTime = ''
       endTime = ''
-      [0..openedFile.length].each do |index|
-        line = openedFile[index]
-        line = line.replace('\n', '')
+      openedFile.each_with_index do |line, index|
+        line = line.gsub '\n', ''
         if is_sentence(line)
           if is_begin(line)
             currentSentence = line
@@ -71,7 +68,7 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
               print '~~~TROVATA~~~'
               start = get_seconds_from_time(startTime) - beforeTime
               endTs = get_seconds_from_time(endTime) + afterTime
-              comand = "ffmpeg -ss #{start} -strict -2 -to #{endTs} -i #{file.replace('.srt', '.mp4')} #{name}.mp4"
+              comand = "ffmpeg -ss #{start} -strict -2 -to #{endTs} -i #{file.gsub '.srt', '.mp4'} #{name}.mp4"
               print(comand)
               system(comand)
               #  ffmpeg -ss 00:01:00 -i input.mp4 -to 00:02:00 -c copy output.mp4

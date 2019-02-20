@@ -31,7 +31,6 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
 
     files_srt.each do |file|
       p file
-      openedFile
       name = 0
       print "Cerco in " + file
       openedFile = open(file).readlines()

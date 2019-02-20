@@ -7,7 +7,7 @@ module TimeHelper
   def time_difference_in_seconds(minor, major)
     minorTimes = minor.split(':')
     majorTimes = major.split(':')
-    seconds_difference = int(majorTimes[2]) - int(minorTimes[2])
+    seconds_difference = (majorTimes[2]).to_i - (minorTimes[2]).to_i
     minutes = 0
     while seconds_difference < 0 do
       minutes += 1
@@ -18,7 +18,7 @@ module TimeHelper
 
   def get_seconds_from_time(time)
     times = time.split(':')
-    return int(times[0]) * 60 * 60 + int(times[1]) * 60 + int(times[2])
+    return (times[0]).to_i * 60 * 60 + (times[1]).to_i * 60 + (times[2]).to_i
   end
 
   def is_time(timeString)

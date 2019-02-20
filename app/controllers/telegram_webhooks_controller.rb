@@ -12,6 +12,11 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     print _offset
     query = query.first(10) # it's just an example, don't use large queries.
 
+    query.strip!
+    if query.blank?
+      return
+    end
+    results = Array.new()
 
     files_srt = Dir.glob("#{Rails.root}/data/srt/*")
     beforeTime = 1
@@ -21,14 +26,15 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     print "Tempo After: #{afterTime}"
     print 'Cerco nei file .srt'
     frase = query
+    name = 0
     files_srt.each do |file|
-      name = 0
       # print "Cerco in " + file
       openedFile = open(file).readlines()
       currentSentence = ""
       startTime = ''
       endTime = ''
       openedFile.each_with_index do |line, index|
+        break if name > 10
         line = line.strip
         if is_sentence(line)
           if is_begin(line)
@@ -61,9 +67,17 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
               print '~~~TROVATA~~~'
               start = get_seconds_from_time(startTime) - beforeTime
               endTs = get_seconds_from_time(endTime) + afterTime
-              comand = "ffmpeg -ss #{start} -strict -2 -to #{endTs} -i #{file.gsub '.srt', '.mp4'} #{name}.mp4"
+              # Salvare il file con ffmpeg
+              # Darlo come url assoluto (panico)
+              comand = "ffmpeg -ss #{start} -strict -2 -to #{endTs} -y -i #{file.gsub '.srt', '.mp4'} #{Rails.public_path}/gifs/#{name}.mp4"
               print(comand)
-              # system(comand)
+              system(comand)
+              results << {
+                type: :mpeg4_gif,
+                id: "#{query}-#{name}",
+                mpeg4_url: "https://i.pinimg.com/originals/9d/1e/37/9d1e37914b558bb7f01c73489fbdfb4f.gif",
+                thumb_url: "http://www.kensap.org/wp-content/uploads/empty-photo.jpg"
+              }
               #  ffmpeg -ss 00:01:00 -i input.mp4 -to 00:02:00 -c copy output.mp4
               # -strict -2 probabilmente non è istantaneo come -c copy, ma taglia correttamente
             end
@@ -72,14 +86,6 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
       end
     end
 
-    results = Array.new(5) do |i|
-      {
-        type: :mpeg4_gif,
-        id: "#{query}-#{i}",
-        mpeg4_url: "https://i.pinimg.com/originals/9d/1e/37/9d1e37914b558bb7f01c73489fbdfb4f.gif",
-        thumb_url: "http://www.kensap.org/wp-content/uploads/empty-photo.jpg"
-      }
-    end
     answer_inline_query results
   end
 

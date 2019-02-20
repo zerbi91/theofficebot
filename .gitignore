@@ -16,5 +16,5 @@ config/local_env.yml
 tmp/cache/*
 config/secrets.yml
 tmp/cache/bootsnap-load-path-cache
-
+data/srt/*.mp4
 

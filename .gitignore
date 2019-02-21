@@ -12,6 +12,7 @@ config/unicorn.rb
 log
 .DS_Store
 public/assets/*
+public/gifs/*
 config/local_env.yml
 tmp/cache/*
 config/secrets.yml

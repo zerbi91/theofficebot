@@ -10,7 +10,7 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     print query
     print "offset"
     print _offset
-    query = query.first(10) # it's just an example, don't use large queries.
+    # query = query.first(10) # it's just an example, don't use large queries.
 
     query.strip!
     if query.blank?
@@ -18,7 +18,7 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
     end
     results = Array.new()
 
-    files_srt = Dir.glob("#{Rails.root}/data/srt/*")
+    files_srt = Dir.glob("#{Rails.root}/data/srt/*.srt")
     beforeTime = 1
     afterTime = 2
     print "Cerco: " + query
@@ -34,7 +34,7 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
       startTime = ''
       endTime = ''
       openedFile.each_with_index do |line, index|
-        break if name > 10
+        break if name > 3
         line = line.strip
         if is_sentence(line)
           if is_begin(line)
@@ -65,18 +65,22 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
             if founded
               name += 1
               print '~~~TROVATA~~~'
+              new_name = query.split(' ').sort().join('-') + name.to_s
               start = get_seconds_from_time(startTime) - beforeTime
               endTs = get_seconds_from_time(endTime) + afterTime
               # Salvare il file con ffmpeg
               # Darlo come url assoluto (panico)
-              comand = "ffmpeg -ss #{start} -strict -2 -to #{endTs} -y -i #{file.gsub '.srt', '.mp4'} #{Rails.public_path}/gifs/#{name}.mp4"
+              comand = "ffmpeg -ss #{start} -strict -2 -to #{endTs} -n -i #{file.gsub '.srt', '.mp4'} #{Rails.public_path}/gifs/#{new_name}.mp4"
               print(comand)
-              system(comand)
+              # system(comand)
+              fork { exec(comand) }
+              lt_url = "https://bitter-newt-84.localtunnel.me"
+              p "#{lt_url}/gifs/#{new_name}.mp4"
               results << {
                 type: :mpeg4_gif,
-                id: "#{query}-#{name}",
-                mpeg4_url: "https://i.pinimg.com/originals/9d/1e/37/9d1e37914b558bb7f01c73489fbdfb4f.gif",
-                thumb_url: "http://www.kensap.org/wp-content/uploads/empty-photo.jpg"
+                id: "#{new_name}",
+                mpeg4_url: "#{lt_url}/gifs/#{new_name}.mp4",
+                thumb_url: "#{lt_url}/placeholder.jpg"
               }
               #  ffmpeg -ss 00:01:00 -i input.mp4 -to 00:02:00 -c copy output.mp4
               # -strict -2 probabilmente non è istantaneo come -c copy, ma taglia correttamente
@@ -85,7 +89,7 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
         end
       end
     end
-
+    # rispondere subito poi create le gif in thread separato
     answer_inline_query results
   end
 

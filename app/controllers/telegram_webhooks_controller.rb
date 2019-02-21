@@ -70,11 +70,11 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
               endTs = get_seconds_from_time(endTime) + afterTime
               # Salvare il file con ffmpeg
               # Darlo come url assoluto (panico)
-              comand = "ffmpeg -ss #{start} -strict -2 -to #{endTs} -n -i #{file.gsub '.srt', '.mp4'} #{Rails.public_path}/gifs/#{new_name}.mp4"
+              comand = "ffmpeg -loglevel panic -ss #{start} -strict -2 -to #{endTs} -n -i #{file.gsub '.srt', '.mp4'} #{Rails.public_path}/gifs/#{new_name}.mp4"
               print(comand)
               # system(comand)
               fork { exec(comand) }
-              lt_url = "https://bitter-newt-84.localtunnel.me"
+              lt_url = "https://average-snake-30.localtunnel.me"
               p "#{lt_url}/gifs/#{new_name}.mp4"
               results << {
                 type: :mpeg4_gif,
